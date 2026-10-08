@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ViezAI Admin — Lead & Contact Management</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand-group">
+          <img src="/assets/logo.svg" alt="ViezAI Logo" class="brand-logo">
+          <span class="brand-title">ViezAI Enterprise</span>
+          <span class="brand-badge">Admin Console</span>
+        </div>
+
+        <div class="user-actions">
+          <div class="pulse-badge">
+            <span class="pulse-dot"></span>
+            <span>Live System</span>
+          </div>
+          <button id="refreshBtn" class="btn btn-secondary btn-sm" title="Tải lại dữ liệu">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            </svg>
+            Làm mới
+          </button>
+          <button id="exportCsvBtn" class="btn btn-secondary btn-sm" title="Xuất dữ liệu ra file Excel / CSV">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Xuất CSV
+          </button>
+          <button id="logoutBtn" class="btn btn-secondary btn-sm" style="display: none;">Đăng xuất</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Views Container -->
+    <main class="main-content">
+      <!-- 1. LOGIN VIEW -->
+      <section id="loginView" class="login-view">
+        <div class="login-card">
+          <div class="login-icon">
+            <img src="/assets/logo.svg" alt="ViezAI Logo" width="48" height="48">
+          </div>
+          <h1 class="login-title">ViezAI Admin</h1>
+          <p class="login-desc">Nhập mã khóa quản trị (Secret Token) để tiếp tục truy cập trang quản lý lead.</p>
+
+          <form id="loginForm" class="login-form">
+            <input
+              type="password"
+              id="adminKeyInput"
+              class="form-input"
+              placeholder="Nhập ADMIN_KEY..."
+              autocomplete="current-password"
+              required
+            >
+            <div id="loginError" style="color: var(--accent-rose); font-size: 0.82rem; display: none; text-align: left;"></div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Truy cập bảng điều khiển</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- 2. DASHBOARD VIEW -->
+      <section id="dashboardView" style="display: none;">
+        <!-- KPI Summary Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">TỔNG YÊU CẦU LIÊN HỆ</span>
+            </div>
+            <div id="kpiTotal" class="kpi-value">0</div>
+            <div class="kpi-footer">Từ Landing Page viezai.com</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">LEAD MỚI NHẬN</span>
+              <span class="status-pill status-new">Chưa liên hệ</span>
+            </div>
+            <div id="kpiNew" class="kpi-value" style="color: #93c5fd;">0</div>
+            <div class="kpi-footer">Cần phản hồi sớm</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">ĐANG XỬ LÝ / TƯ VẤN</span>
+              <span class="status-pill status-contacting">In Progress</span>
+            </div>
+            <div id="kpiContacting" class="kpi-value" style="color: #fcd34d;">0</div>
+            <div class="kpi-footer">Đang trao đổi giải pháp</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">ĐÃ HOÀN THÀNH</span>
+              <span class="status-pill status-completed">Success</span>
+            </div>
+            <div id="kpiCompleted" class="kpi-value" style="color: #6ee7b7;">0</div>
+            <div class="kpi-footer">Đã chốt thỏa thuận / demo</div>
+          </div>
+        </div>
+
+        <!-- Controls: Search & Status Filters -->
+        <div class="controls-bar">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="text"
+              id="searchInput"
+              class="form-input search-input"
+              placeholder="Tìm theo tên, email, công ty, ghi chú..."
+            >
+          </div>
+
+          <div class="filter-group">
+            <button class="filter-btn active" data-status="">Tất cả</button>
+            <button class="filter-btn" data-status="new">Mới nhận</button>
+            <button class="filter-btn" data-status="contacting">Đang liên hệ</button>
+            <button class="filter-btn" data-status="completed">Hoàn thành</button>
+            <button class="filter-btn" data-status="archived">Lưu trữ</button>
+          </div>
+        </div>
+
+        <!-- Contacts Table Card -->
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="contacts-table">
+              <thead>
+                <tr>
+                  <th>Khách hàng</th>
+                  <th>Doanh nghiệp</th>
+                  <th>Nhu cầu AI Agent</th>
+                  <th>Trạng thái</th>
+                  <th>Thời gian gửi</th>
+                  <th style="text-align: right;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="contactsTbody">
+                <!-- Injected via admin.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer Pagination -->
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; background: #08080a; border-top: 1px solid var(--border-subtle); font-size: 0.85rem;">
+            <div id="contactsCountInfo" style="color: var(--text-tertiary);">0 kết quả</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <button id="paginationPrev" class="btn btn-secondary btn-sm" disabled>Trước</button>
+              <span id="paginationCurrent" style="color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.8rem; padding: 0 0.5rem;">Trang 1 / 1</span>
+              <button id="paginationNext" class="btn btn-secondary btn-sm" disabled>Sau</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Detail & Edit Modal -->
+  <div id="detailModal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title">Chi tiết liên hệ khách hàng</h2>
+        <button id="modalCloseBtn" class="modal-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="detail-row">
+          <div class="detail-label">Họ và tên:</div>
+          <div id="detailName" class="detail-value" style="font-weight: 600;"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Email:</div>
+          <div id="detailEmail" class="detail-value" style="font-family: var(--font-mono);"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Doanh nghiệp:</div>
+          <div id="detailCompany" class="detail-value"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Nhu cầu giải pháp:</div>
+          <div id="detailNeed" class="detail-value"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Thời gian tiếp nhận:</div>
+          <div id="detailDate" class="detail-value"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Địa chỉ IP:</div>
+          <div id="detailIp" class="detail-value" style="font-family: var(--font-mono); color: var(--text-tertiary);"></div>
+        </div>
+
+        <div>
+          <div class="detail-label" style="margin-bottom: 0.4rem;">Nội dung lời nhắn / mô tả bài toán:</div>
+          <div id="detailMessage" class="message-box"></div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border-subtle); margin: 0.5rem 0;">
+
+        <div>
+          <label class="detail-label" style="display: block; margin-bottom: 0.4rem;">Trạng thái xử lý:</label>
+          <select id="detailStatusSelect" class="form-input" style="background: #08080a;">
+            <option value="new">Mới nhận (New)</option>
+            <option value="contacting">Đang liên hệ (Contacting)</option>
+            <option value="completed">Đã hoàn thành / Đã chốt (Completed)</option>
+            <option value="archived">Lưu trữ / Đóng (Archived)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="detail-label" style="display: block; margin-bottom: 0.4rem;">Ghi chú nội bộ (Internal Notes):</label>
+          <textarea
+            id="detailNotesInput"
+            class="form-input"
+            rows="3"
+            placeholder="Nhập kết quả trao đổi, người phụ trách, thời gian hẹn demo..."
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="deleteContactBtn" class="btn btn-danger btn-sm">Xóa liên hệ này</button>
+        <button id="saveContactBtn" class="btn btn-primary btn-sm">Lưu cập nhật</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Feedback -->
+  <div id="toast" class="toast">
+    <span id="toastMessage">Thông báo</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/admin.js"></script>
+</body>
+</html>
