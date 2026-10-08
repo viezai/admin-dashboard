@@ -1,0 +1,25 @@
+services:
+  admin-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: viezai-admin-dashboard
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - ADMIN_KEY=viezai_admin_2026
+      - CORS_ORIGIN=https://viezai.com,http://localhost:3000,http://localhost:8080
+      - DISCORD_WEBHOOK_URL=
+      - TELEGRAM_BOT_TOKEN=
+      - TELEGRAM_CHAT_ID=
+    volumes:
+      # Mount thư mục data để lưu file contacts.db bền vững qua các lần khởi động lại
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

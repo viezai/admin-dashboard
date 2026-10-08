@@ -1,0 +1,28 @@
+{
+  "name": "viezai-admin-dashboard",
+  "version": "1.0.0",
+  "description": "ViezAI (viezai.com) Lightweight Admin Dashboard & Contact Ingestion Engine",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node tests/api.test.js"
+  },
+  "keywords": [
+    "viezai",
+    "admin-dashboard",
+    "lead-management",
+    "contact-form",
+    "ai-agent",
+    "sqlite"
+  ],
+  "author": "ViezAI Technologies",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^18.0.0",
+    "express": "^5.2.0",
+    "sql.js": "^1.14.0"
+  }
+}
